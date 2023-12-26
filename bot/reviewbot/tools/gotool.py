@@ -150,10 +150,11 @@ class GoTool(FullRepositoryToolMixin, BaseTool):
                 'test',
                 '-json',
                 '-vet=off',
-                './%s' % package,
+                f'./{package}',
             ],
             split_lines=True,
-            ignore_errors=True)
+            ignore_errors=True,
+        )
 
         test_results = OrderedDict()
         found_json_errors = False
@@ -220,13 +221,10 @@ class GoTool(FullRepositoryToolMixin, BaseTool):
         # always respect this for all errors. Rather than checking for both
         # JSON output and non-JSON output, we'll just parse the usual way.
         output = execute(
-            [
-                config['exe_paths']['go'],
-                'vet',
-                './%s' % package,
-            ],
+            [config['exe_paths']['go'], 'vet', f'./{package}'],
             with_errors=True,
-            ignore_errors=True)
+            ignore_errors=True,
+        )
 
         for m in self.VET_ERROR_RE.finditer(output):
             path = m.group('path')

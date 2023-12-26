@@ -63,7 +63,7 @@ class RubocopTool(BaseTool):
         ]
 
         if except_list:
-            cmdline.append('--except=%s' % ','.join(except_list))
+            cmdline.append(f"--except={','.join(except_list)}")
 
         return cmdline
 
@@ -110,7 +110,7 @@ class RubocopTool(BaseTool):
                 location = offense['location']
 
                 # Strip away the cop name prefix, if found.
-                prefix = '%s: ' % cop_name
+                prefix = f'{cop_name}: '
 
                 if message.startswith(prefix):
                     message = message[len(prefix):]

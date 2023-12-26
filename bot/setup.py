@@ -57,7 +57,7 @@ class DevelopCommand(develop):
         ret = os.system(cmd)
 
         if ret != 0:
-            raise RuntimeError('Failed to run `%s`' % cmd)
+            raise RuntimeError(f'Failed to run `{cmd}`')
 
 
 with open('README.rst', 'r') as fp:

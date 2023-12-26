@@ -94,13 +94,10 @@ class CPPLintTool(BaseTool):
         verbosity = settings['verbosity']
         excluded_checks = settings.get('excluded_checks')
 
-        cmdline = [
-            config['exe_paths']['cpplint'],
-            '--verbose=%s' % verbosity,
-        ]
+        cmdline = [config['exe_paths']['cpplint'], f'--verbose={verbosity}']
 
         if excluded_checks:
-            cmdline.append('--filter=%s' % excluded_checks)
+            cmdline.append(f'--filter={excluded_checks}')
 
         return cmdline
 

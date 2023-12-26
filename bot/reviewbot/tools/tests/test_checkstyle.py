@@ -246,13 +246,15 @@ class CheckstyleToolTests(BaseToolTestCase):
             execute,
             [
                 self.tool_exe_path,
-                '-cp', config['java_classpaths']['checkstyle'][0],
+                '-cp',
+                config['java_classpaths']['checkstyle'][0],
                 'com.puppycrawl.tools.checkstyle.Main',
                 '-f=xml',
-                '-c=%s' % tmpfiles[-1],
+                f'-c={tmpfiles[-1]}',
                 os.path.join(tmpdirs[-1], 'Test.java'),
             ],
-            ignore_errors=True)
+            ignore_errors=True,
+        )
 
     @integration_test()
     @simulation_test(output=(
@@ -295,13 +297,15 @@ class CheckstyleToolTests(BaseToolTestCase):
             execute,
             [
                 self.tool_exe_path,
-                '-cp', config['java_classpaths']['checkstyle'][0],
+                '-cp',
+                config['java_classpaths']['checkstyle'][0],
                 'com.puppycrawl.tools.checkstyle.Main',
                 '-f=xml',
-                '-c=%s' % tmpfiles[-1],
+                f'-c={tmpfiles[-1]}',
                 os.path.join(tmpdirs[-1], 'Test.java'),
             ],
-            ignore_errors=True)
+            ignore_errors=True,
+        )
 
     @integration_test()
     @simulation_test(output=(

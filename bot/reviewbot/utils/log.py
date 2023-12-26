@@ -36,10 +36,7 @@ def get_logger(name, is_task_logger=True):
         logging.Logger:
         The new (or existing) logger for the given name.
     """
-    if is_task_logger:
-        return _get_task_logger(name)
-
-    return _get_logger(name)
+    return _get_task_logger(name) if is_task_logger else _get_logger(name)
 
 
 def get_root_logger():

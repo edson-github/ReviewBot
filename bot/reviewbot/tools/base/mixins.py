@@ -74,16 +74,14 @@ class FilePatternsFromSettingMixin(object):
         file_patterns = None
 
         if self.file_patterns_setting:
-            value = settings.get(self.file_patterns_setting, '').strip()
-
-            if value:
+            if value := settings.get(self.file_patterns_setting, '').strip():
                 file_patterns = split_comma_separated(value)
 
         if not file_patterns and self.file_extensions_setting:
             value = settings.get(self.file_extensions_setting, '').strip()
 
             file_patterns = [
-                '*.%s' % glob_escape(ext.lstrip('.'))
+                f"*.{glob_escape(ext.lstrip('.'))}"
                 for ext in split_comma_separated(value)
             ]
 
@@ -281,8 +279,4 @@ class JavaToolMixin(object):
         if not classpath:
             return False
 
-        for path in classpath:
-            if not path or not os.path.exists(path):
-                return False
-
-        return True
+        return not any(not path or not os.path.exists(path) for path in classpath)

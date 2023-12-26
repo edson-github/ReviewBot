@@ -236,11 +236,7 @@ class BaseTool(object):
 
         filename = review_file.dest_file.lower()
 
-        for pattern in self.file_patterns:
-            if fnmatchcase(filename, pattern):
-                return True
-
-        return False
+        return any(fnmatchcase(filename, pattern) for pattern in self.file_patterns)
 
     def execute(self, review, repository=None, base_commit_id=None, **kwargs):
         """Perform a review using the tool.
@@ -322,11 +318,8 @@ class BaseTool(object):
             if self.get_can_handle_file(review_file=f, **kwargs):
                 if legacy_tool:
                     self.handle_file(f, **kwargs)
-                else:
-                    path = f.get_patched_file_path()
-
-                    if path:
-                        self.handle_file(f, path=path, **kwargs)
+                elif path := f.get_patched_file_path():
+                    self.handle_file(f, path=path, **kwargs)
 
     def handle_file(self, f, path=None, base_command=None, **kwargs):
         """Perform a review of a single file.

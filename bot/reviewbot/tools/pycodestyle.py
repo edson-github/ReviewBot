@@ -64,12 +64,12 @@ class PycodestyleTool(BaseTool):
 
         cmd = [
             config['exe_paths']['pycodestyle'],
-            '--max-line-length=%s' % settings['max_line_length'],
+            f"--max-line-length={settings['max_line_length']}",
             '--format=%(code)s:%(row)d:%(col)d:%(text)s',
         ]
 
         if ignore:
-            cmd.append('--ignore=%s' % ignore)
+            cmd.append(f'--ignore={ignore}')
 
         return cmd
 

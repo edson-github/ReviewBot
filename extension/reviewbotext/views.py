@@ -34,22 +34,19 @@ def _serialize_user(request, user):
         dict:
         A dictionary of data to be encoded and sent back to the client.
     """
-    if user:
-        service = avatar_services.for_user(user)
-
-        if service:
-            avatar_url = service.get_avatar_urls(request, user, 48)['1x']
-        else:
-            avatar_url = None
-
-        return {
-            'avatar_url': avatar_url,
-            'id': user.id,
-            'fullname': user.get_full_name(),
-            'username': user.username,
-        }
-    else:
+    if not user:
         return None
+    avatar_url = (
+        service.get_avatar_urls(request, user, 48)['1x']
+        if (service := avatar_services.for_user(user))
+        else None
+    )
+    return {
+        'avatar_url': avatar_url,
+        'id': user.id,
+        'fullname': user.get_full_name(),
+        'username': user.username,
+    }
 
 
 class ConfigureView(TemplateView):
@@ -94,9 +91,7 @@ class ConfigureView(TemplateView):
 
         extension = ReviewBotExtension.instance
         should_save = False
-        new_user = request.POST.get('reviewbot_user')
-
-        if new_user:
+        if new_user := request.POST.get('reviewbot_user'):
             try:
                 user = User.objects.get(pk=new_user)
             except User.DoesNotExist:
@@ -153,10 +148,7 @@ class ConfigureView(TemplateView):
             'brokerURL': extension.settings.get('broker_url'),
         }
 
-        # Add information on the Review Bot User entry.
-        user = get_object_or_none(User, pk=extension.settings.get('user'))
-
-        if user:
+        if user := get_object_or_none(User, pk=extension.settings.get('user')):
             extension_config_attrs['user'] = _serialize_user(request, user)
 
         return dict(super(ConfigureView, self).get_context_data(**kwargs), **{
@@ -267,9 +259,9 @@ class WorkerStatusView(View):
             django.http.HttpResponse:
             The response.
         """
-        extension = ReviewBotExtension.instance
         response = {}
 
+        extension = ReviewBotExtension.instance
         if extension.is_configured:
             try:
                 payload = {
@@ -296,19 +288,11 @@ class WorkerStatusView(View):
                             })
                         elif worker_status == 'error':
                             state = 'error'
-                            error = (
-                                'Error from %s: %s'
-                                % (worker_host, data['error'])
-                            )
+                            error = f"Error from {worker_host}: {data['error']}"
                             break
                         else:
                             state = 'error'
-                            error = (
-                                "Unexpected result when querying worker "
-                                "status for %s. Please check the worker's "
-                                "logs for information."
-                                % worker_host
-                            )
+                            error = f"Unexpected result when querying worker status for {worker_host}. Please check the worker's logs for information."
                             break
 
                 response = {
@@ -320,10 +304,7 @@ class WorkerStatusView(View):
                 else:
                     response['error'] = error
             except IOError as e:
-                response = {
-                    'state': 'error',
-                    'error': 'Unable to connect to broker: %s' % e,
-                }
+                response = {'state': 'error', 'error': f'Unable to connect to broker: {e}'}
         else:
             response = {
                 'state': 'error',

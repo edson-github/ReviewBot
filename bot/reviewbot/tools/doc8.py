@@ -68,8 +68,8 @@ class Doc8Tool(BaseTool):
         return [
             config['exe_paths']['doc8'],
             '-q',
-            '--max-line-length=%s' % settings['max_line_length'],
-            '--file-encoding=%s' % settings['encoding'],
+            f"--max-line-length={settings['max_line_length']}",
+            f"--file-encoding={settings['encoding']}",
         ]
 
     def handle_file(self, f, path, base_command, **kwargs):
@@ -95,9 +95,7 @@ class Doc8Tool(BaseTool):
         line_re = self.LINE_RE
 
         for line in output:
-            m = line_re.match(line)
-
-            if m:
+            if m := line_re.match(line):
                 # We've validated the types in the regex above, so we should
                 # be safe to cast to int here.
                 f.comment(text=m.group('text'),

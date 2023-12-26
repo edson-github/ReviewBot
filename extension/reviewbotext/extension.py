@@ -125,7 +125,7 @@ class ReviewBotExtension(Extension):
         # within the django auth middleware. 3.0.8 also shipped with a bug in
         # get_auth_backend(), so we have to use get() instead.
         backend_cls = auth_backends.get('backend_id', 'builtin')
-        user.backend = '%s.%s' % (backend_cls.__module__, backend_cls.__name__)
+        user.backend = f'{backend_cls.__module__}.{backend_cls.__name__}'
 
         engine = import_module(settings.SESSION_ENGINE)
 

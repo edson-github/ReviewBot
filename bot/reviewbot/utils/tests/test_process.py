@@ -22,7 +22,7 @@ class IsExeInPathTests(TestCase):
 
         # We can freely set this here, because the parent class is going to
         # handle resetting it in tearDownClass().
-        os.environ['PATH'] = '/xxx/abc:%s:/xxx/def' % cls.tempdir
+        os.environ['PATH'] = f'/xxx/abc:{cls.tempdir}:/xxx/def'
 
         with open(cls.exe_filename, 'w') as fp:
             fp.write('#!/bin/sh\n')

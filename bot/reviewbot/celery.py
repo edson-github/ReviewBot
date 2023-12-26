@@ -65,16 +65,16 @@ def create_queues(hostname):
         Queue('celery', default_exchange, routing_key='celery'),
     ]
 
-    found_tools = []
     missing_dep_tools = []
     working_dir_tools = []
 
+    found_tools = []
     # Detect the installed tools and select the corresponding queues to
     # consume from.
     for tool_class in get_tool_classes():
         tool_id = tool_class.tool_id
         tool = tool_class()
-        queue_name = '%s.%s' % (tool_id, tool_class.version)
+        queue_name = f'{tool_id}.{tool_class.version}'
 
         if tool.check_dependencies():
             found_tools.append(tool_id)
@@ -86,7 +86,7 @@ def create_queues(hostname):
                 working_dir_tools.append(tool_id)
 
                 for repo_name in repositories:
-                    repo_queue_name = '%s.%s' % (queue_name, repo_name)
+                    repo_queue_name = f'{queue_name}.{repo_name}'
 
                     queues.append(Queue(
                         repo_queue_name,
@@ -103,8 +103,8 @@ def create_queues(hostname):
     s = [
         'Welcome!',
         '',
-        'Review Bot will connect to %s' % celery.connection().as_uri(),
-        'as %s.' % hostname,
+        f'Review Bot will connect to {celery.connection().as_uri()}',
+        f'as {hostname}.',
         '',
     ]
 
@@ -141,63 +141,50 @@ def create_queues(hostname):
     ]
 
     if found_tools:
-        s += [
-            'The following tools are available:',
-            '',
-        ] + [
-            '  * %s' % _tool_id
-            for _tool_id in found_tools
-        ] + ['']
+        s += (
+            [
+                'The following tools are available:',
+                '',
+            ]
+            + [f'  * {_tool_id}' for _tool_id in found_tools]
+            + ['']
+        )
 
     if missing_dep_tools:
-        s += [
-            'The following tools are missing dependencies:',
-            '',
-        ] + [
-            '  * %s' % _tool_id
-            for _tool_id in missing_dep_tools
-        ] + [
-            '',
-            'See %stools/ for help on installing tools.'
-            % _manual_url,
-            '',
-        ]
+        s += (
+            [
+                'The following tools are missing dependencies:',
+                '',
+            ]
+            + [f'  * {_tool_id}' for _tool_id in missing_dep_tools]
+            + [
+                '',
+                f'See {_manual_url}tools/ for help on installing tools.',
+                '',
+            ]
+        )
 
     if working_dir_tools:
         if not repositories:
             s += [
-                'The following tools cannot be used without one or more '
-                'configured repositories in %s:'
-                % get_config_file_path(),
+                f'The following tools cannot be used without one or more configured repositories in {get_config_file_path()}:',
                 '',
-            ] + [
-                '  * %s' % _tool_id
-                for _tool_id in working_dir_tools
-            ]
+            ] + [f'  * {_tool_id}' for _tool_id in working_dir_tools]
         else:
             s += [
-                'The following tools require a configured repository in %s:'
-                % get_config_file_path(),
+                f'The following tools require a configured repository in {get_config_file_path()}:',
                 '',
-            ] + [
-                '  * %s' % _tool_id
-                for _tool_id in working_dir_tools
-            ]
+            ] + [f'  * {_tool_id}' for _tool_id in working_dir_tools]
 
             s += [
                 '',
                 'Configured repositories include:',
                 '',
-            ] + [
-                '  * %s' % _repository
-                for _repository in repositories
-            ]
+            ] + [f'  * {_repository}' for _repository in repositories]
 
         s += [
             '',
-            'See %sconfiguration/#worker-configuration-repositories for '
-            'help on configuring repositories.'
-            % _manual_url,
+            f'See {_manual_url}configuration/#worker-configuration-repositories for help on configuring repositories.',
             '',
         ]
 
@@ -228,8 +215,7 @@ def setup_cookies():
         try:
             os.makedirs(cookie_dir, 0o755)
         except OSError as e:
-            raise IOError('Unable to create cookies directory "%s": %s'
-                          % (cookie_dir, e))
+            raise IOError(f'Unable to create cookies directory "{cookie_dir}": {e}')
 
     can_write_cookies = True
 
@@ -436,17 +422,20 @@ def start_worker(broker, hostname, loglevel, logfile, detach, pidfile, uid,
 
         # Some options are passed to detach() directly. Some are passed as
         # command line arguments. Some are both.
-        for name, value in (('autoscale', autoscale),
-                            ('broker', broker),
-                            ('concurrency', concurrency),
-                            ('hostname', hostname),
-                            ('logfile', logfile),
-                            ('loglevel', loglevel),
-                            ('pidfile', pidfile),
-                            ('pool', pool_cls)):
-            if value is not None:
-                detach_argv.append('--%s=%s' % (name, value))
-
+        detach_argv.extend(
+            f'--{name}={value}'
+            for name, value in (
+                ('autoscale', autoscale),
+                ('broker', broker),
+                ('concurrency', concurrency),
+                ('hostname', hostname),
+                ('logfile', logfile),
+                ('loglevel', loglevel),
+                ('pidfile', pidfile),
+                ('pool', pool_cls),
+            )
+            if value is not None
+        )
         return detach_process(
             app=celery,
             path=sys.executable,
@@ -476,8 +465,7 @@ def start_worker(broker, hostname, loglevel, logfile, detach, pidfile, uid,
             autoscale=autoscale,
             quiet=True)
 
-        if CELERY_VERSION >= (5, 0):
-            worker.start()
-            return worker.exitcode
-        else:
+        if CELERY_VERSION < (5, 0):
             return worker.start()
+        worker.start()
+        return worker.exitcode

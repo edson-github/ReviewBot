@@ -33,15 +33,17 @@ def bug_role(role, rawtext, text, linenum, inliner, options={}, content=[]):
         return [prb], [msg]
 
     ref = bugtracker_url % bugnum
-    node = nodes.reference(rawtext, 'Bug #' + utils.unescape(text),
-                           refuri=ref, **options)
+    node = nodes.reference(
+        rawtext, f'Bug #{utils.unescape(text)}', refuri=ref, **options
+    )
 
     return [node], []
 
 
 def cve_role(role, rawtext, text, linenum, inliner, options={}, content=[]):
-    ref = 'http://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-%s' % text
-    node = nodes.reference(rawtext, 'CVE-' + utils.unescape(text),
-                           refuri=ref, **options)
+    ref = f'http://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-{text}'
+    node = nodes.reference(
+        rawtext, f'CVE-{utils.unescape(text)}', refuri=ref, **options
+    )
 
     return [node], []

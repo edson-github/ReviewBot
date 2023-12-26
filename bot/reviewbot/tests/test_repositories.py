@@ -40,47 +40,58 @@ class RepositoriesTests(kgb.SpyAgency, TestCase):
 
         self.spy_on(
             api_root1.get_repositories,
-            op=kgb.SpyOpMatchAny([
-                {
-                    'kwargs': {
-                        'tool': 'Mercurial',
-                    },
-                    'op': kgb.SpyOpReturn(RepositoryListResource(
-                        transport=api_transport,
-                        payload={
-                            'repositories': [{
-                                'name': 'Mercurial Repo 1',
-                                'path': 'https://hg1.example.com/',
-                                'mirror_path': '',
-                            }],
-                            'total_results': 1,
+            op=kgb.SpyOpMatchAny(
+                [
+                    {
+                        'kwargs': {
+                            'tool': 'Mercurial',
                         },
-                        url='%srepositories/?tool=Mercurial' % rb1_url)),
-                },
-                {
-                    'kwargs': {
-                        'tool': 'Git',
+                        'op': kgb.SpyOpReturn(
+                            RepositoryListResource(
+                                transport=api_transport,
+                                payload={
+                                    'repositories': [
+                                        {
+                                            'name': 'Mercurial Repo 1',
+                                            'path': 'https://hg1.example.com/',
+                                            'mirror_path': '',
+                                        }
+                                    ],
+                                    'total_results': 1,
+                                },
+                                url=f'{rb1_url}repositories/?tool=Mercurial',
+                            )
+                        ),
                     },
-                    'op': kgb.SpyOpReturn(RepositoryListResource(
-                        transport=api_transport,
-                        payload={
-                            'repositories': [
-                                {
-                                    'name': 'Git Repo 1',
-                                    'path': 'git@example.com:/repo1.git',
-                                    'mirror_path': '',
-                                },
-                                {
-                                    'name': 'Git Repo 2',
-                                    'path': 'xxx',
-                                    'mirror_path': 'git://example.com/repo2',
-                                },
-                            ],
-                            'total_results': 2,
+                    {
+                        'kwargs': {
+                            'tool': 'Git',
                         },
-                        url='%srepositories/?tool=Git' % rb1_url)),
-                },
-            ]))
+                        'op': kgb.SpyOpReturn(
+                            RepositoryListResource(
+                                transport=api_transport,
+                                payload={
+                                    'repositories': [
+                                        {
+                                            'name': 'Git Repo 1',
+                                            'path': 'git@example.com:/repo1.git',
+                                            'mirror_path': '',
+                                        },
+                                        {
+                                            'name': 'Git Repo 2',
+                                            'path': 'xxx',
+                                            'mirror_path': 'git://example.com/repo2',
+                                        },
+                                    ],
+                                    'total_results': 2,
+                                },
+                                url=f'{rb1_url}repositories/?tool=Git',
+                            )
+                        ),
+                    },
+                ]
+            ),
+        )
 
         # Set up our API resource tree for rb2.example.com.
         rb2_url = 'https://rb2.example.com/'
@@ -93,36 +104,47 @@ class RepositoriesTests(kgb.SpyAgency, TestCase):
 
         self.spy_on(
             api_root2.get_repositories,
-            op=kgb.SpyOpMatchAny([
-                {
-                    'kwargs': {
-                        'tool': 'Mercurial',
-                    },
-                    'op': kgb.SpyOpReturn(RepositoryListResource(
-                        transport=api_transport,
-                        payload={
-                            'repositories': [{
-                                'name': 'Mercurial Repo 2',
-                                'path': 'https://hg2.example.com/',
-                                'mirror_path': '',
-                            }],
-                            'total_results': 1,
+            op=kgb.SpyOpMatchAny(
+                [
+                    {
+                        'kwargs': {
+                            'tool': 'Mercurial',
                         },
-                        url='%srepositories/?tool=Mercurial' % rb2_url)),
-                },
-                {
-                    'kwargs': {
-                        'tool': 'Git',
+                        'op': kgb.SpyOpReturn(
+                            RepositoryListResource(
+                                transport=api_transport,
+                                payload={
+                                    'repositories': [
+                                        {
+                                            'name': 'Mercurial Repo 2',
+                                            'path': 'https://hg2.example.com/',
+                                            'mirror_path': '',
+                                        }
+                                    ],
+                                    'total_results': 1,
+                                },
+                                url=f'{rb2_url}repositories/?tool=Mercurial',
+                            )
+                        ),
                     },
-                    'op': kgb.SpyOpReturn(RepositoryListResource(
-                        transport=api_transport,
-                        payload={
-                            'repositories': [],
-                            'total_results': 0,
+                    {
+                        'kwargs': {
+                            'tool': 'Git',
                         },
-                        url='%srepositories/?tool=Git' % rb2_url)),
-                },
-            ]))
+                        'op': kgb.SpyOpReturn(
+                            RepositoryListResource(
+                                transport=api_transport,
+                                payload={
+                                    'repositories': [],
+                                    'total_results': 0,
+                                },
+                                url=f'{rb2_url}repositories/?tool=Git',
+                            )
+                        ),
+                    },
+                ]
+            ),
+        )
 
         # Dispatch to the correct root resource for the given server URL.
         self.spy_on(
@@ -193,36 +215,47 @@ class RepositoriesTests(kgb.SpyAgency, TestCase):
 
         self.spy_on(
             api_root.get_repositories,
-            op=kgb.SpyOpMatchAny([
-                {
-                    'kwargs': {
-                        'tool': 'Git',
-                    },
-                    'op': kgb.SpyOpReturn(RepositoryListResource(
-                        transport=api_transport,
-                        payload={
-                            'repositories': [],
-                            'total_results': 0,
+            op=kgb.SpyOpMatchAny(
+                [
+                    {
+                        'kwargs': {
+                            'tool': 'Git',
                         },
-                        url='%srepositories/?tool=Git' % rb_url)),
-                },
-                {
-                    'kwargs': {
-                        'tool': 'Mercurial',
+                        'op': kgb.SpyOpReturn(
+                            RepositoryListResource(
+                                transport=api_transport,
+                                payload={
+                                    'repositories': [],
+                                    'total_results': 0,
+                                },
+                                url=f'{rb_url}repositories/?tool=Git',
+                            )
+                        ),
                     },
-                    'op': kgb.SpyOpReturn(RepositoryListResource(
-                        transport=api_transport,
-                        payload={
-                            'repositories': [{
-                                'name': 'Mercurial Repo 1',
-                                'path': 'https://hg1.example.com/',
-                                'mirror_path': '',
-                            }],
-                            'total_results': 1,
+                    {
+                        'kwargs': {
+                            'tool': 'Mercurial',
                         },
-                        url='%srepositories/?tool=Mercurial' % rb_url)),
-                },
-            ]))
+                        'op': kgb.SpyOpReturn(
+                            RepositoryListResource(
+                                transport=api_transport,
+                                payload={
+                                    'repositories': [
+                                        {
+                                            'name': 'Mercurial Repo 1',
+                                            'path': 'https://hg1.example.com/',
+                                            'mirror_path': '',
+                                        }
+                                    ],
+                                    'total_results': 1,
+                                },
+                                url=f'{rb_url}repositories/?tool=Mercurial',
+                            )
+                        ),
+                    },
+                ]
+            ),
+        )
 
         self.spy_on(get_api_root,
                     op=kgb.SpyOpReturn(api_root))

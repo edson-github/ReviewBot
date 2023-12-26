@@ -84,9 +84,7 @@ class PyflakesTool(BaseTool):
         LINE_RE = self.LINE_RE
 
         for line in output:
-            m = LINE_RE.match(line)
-
-            if m:
+            if m := LINE_RE.match(line):
                 try:
                     linenum = int(m.group('linenum'))
                     column = int(m.group('column'))
@@ -103,17 +101,13 @@ class PyflakesTool(BaseTool):
         i = 0
 
         while i < len(errors):
-            m = LINE_RE.match(errors[i])
-
-            if m:
+            if m := LINE_RE.match(errors[i]):
                 linenum = m.group('linenum')
                 msg = m.group('msg')
 
                 if linenum is None:
                     # This is an unexpected error. Leave a general comment.
-                    f.review.general_comment(
-                        'pyflakes could not process %s: %s'
-                        % (f.dest_file, msg))
+                    f.review.general_comment(f'pyflakes could not process {f.dest_file}: {msg}')
                 else:
                     # This should be a syntax error.
                     try:

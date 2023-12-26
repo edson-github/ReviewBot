@@ -71,8 +71,7 @@ def unregister_tool_class(tool_id):
     try:
         del _registered_tools[tool_id]
     except KeyError:
-        raise KeyError('A tool with the ID "%s" was not registered.'
-                       % tool_id)
+        raise KeyError(f'A tool with the ID "{tool_id}" was not registered.')
 
 
 def get_tool_class(tool_id):

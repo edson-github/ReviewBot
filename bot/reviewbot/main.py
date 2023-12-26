@@ -35,9 +35,8 @@ def create_arg_parser():
         '-v',
         '--version',
         action='version',
-        version='Review Bot %s (Python %s)' % (
-            get_version_string(),
-            '%s.%s' % sys.version_info[:2]))
+        version=f"Review Bot {get_version_string()} (Python {'%s.%s' % sys.version_info[:2]})",
+    )
 
     arg_parser.add_argument(
         '-b',
@@ -51,13 +50,14 @@ def create_arg_parser():
     arg_parser.add_argument(
         '-n',
         '--hostname',
-        default='reviewbot@%s' % socket.gethostname(),
+        default=f'reviewbot@{socket.gethostname()}',
         help=(
             'A custom hostname to set when communicating with the message '
             'queue. This can be a format string with: %%h (fully-qualified '
             'hostname: name.domain), %%n (name-only part of hostname), '
             '%%d (domain part of hostname)'
-        ))
+        ),
+    )
 
     group = arg_parser.add_argument_group('Logging')
     group.add_argument(

@@ -158,10 +158,7 @@ class CargoTool(FullRepositoryToolMixin, BaseTool):
                 first_line = span.get('line_start')
                 start_column = span.get('column_start')
 
-                if first_line is not None:
-                    num_lines = span['line_end'] - first_line + 1
-                else:
-                    num_lines = None
+                num_lines = None if first_line is None else span['line_end'] - first_line + 1
             except (IndexError, KeyError):
                 continue
 

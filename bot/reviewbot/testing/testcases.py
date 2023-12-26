@@ -71,7 +71,8 @@ class FileAttachmentListResource(FileAttachmentListResource):
                 },
             },
             token='user_file_attachment',
-            url='%s/123/' % self._url)
+            url=f'{self._url}/123/',
+        )
 
 
 class DummyFileDiffResource(FileDiffResource):
@@ -150,7 +151,8 @@ class DummyFileDiffResource(FileDiffResource):
                 },
             },
             token='resource',
-            url='%s/original-file/' % self._url)
+            url=f'{self._url}/original-file/',
+        )
 
     def _get_patched_file(self, **kwargs):
         """Return the patched version of the FileDiff's content.
@@ -171,7 +173,8 @@ class DummyFileDiffResource(FileDiffResource):
                 },
             },
             token='resource',
-            url='%s/patched-file/' % self._url)
+            url=f'{self._url}/patched-file/',
+        )
 
     def get_diff_data(self, **kwargs):
         """Return the diff data.
@@ -237,7 +240,8 @@ class ReviewBotReviewsResource(ListResource):
                 }
             },
             token='review_bot_review',
-            url='%s123/' % self._url)
+            url=f'{self._url}123/',
+        )
 
 
 class ReviewBotToolsResource(ListResource):
@@ -285,7 +289,8 @@ class ReviewBotExtensionResource(ItemResource):
             payload={
                 'total_results': 0,
             },
-            url='%sreview-bot-reviews/' % self._url)
+            url=f'{self._url}review-bot-reviews/',
+        )
 
     def get_tools(self, **kwargs):
         """Return a new Review Bot tools list resource.
@@ -303,7 +308,8 @@ class ReviewBotExtensionResource(ItemResource):
             payload={
                 'total_results': 0,
             },
-            url='%stools/' % self._url)
+            url=f'{self._url}tools/',
+        )
 
 
 class StatusUpdateResource(ItemResource):
@@ -348,7 +354,8 @@ class DummyRootResource(RootResource):
         return ReviewBotExtensionResource(
             transport=self._transport,
             payload={},
-            url='%sextensions/%s/' % (self._url, extension_name))
+            url=f'{self._url}extensions/{extension_name}/',
+        )
 
     def get_files(self, **kwargs):
         """Return all filediffs resources.
@@ -384,7 +391,8 @@ class DummyRootResource(RootResource):
             payload={
                 'total_results': 0,
             },
-            url='%srepositories/' % self._url)
+            url=f'{self._url}repositories/',
+        )
 
     def get_status_update(self, review_request_id, status_update_id,
                           **kwargs):
@@ -411,8 +419,8 @@ class DummyRootResource(RootResource):
                     'id': status_update_id,
                 },
             },
-            url=('%sreview-requests/%s/status-updates/%s/'
-                 % (self._url, review_request_id, status_update_id)))
+            url=f'{self._url}review-requests/{review_request_id}/status-updates/{status_update_id}/',
+        )
 
     def get_user_file_attachments(self, username, **kwargs):
         """Return a user file attachment list resource.
@@ -433,7 +441,8 @@ class DummyRootResource(RootResource):
             payload={
                 'total_results': 0,
             },
-            url='%susers/%s/user-file-attachments/' % (self._url, username))
+            url=f'{self._url}users/{username}/user-file-attachments/',
+        )
 
 
 class TestCase(unittest.TestCase):

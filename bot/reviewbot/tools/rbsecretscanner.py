@@ -291,9 +291,7 @@ class SecretScannerTool(BaseTool):
         pattern = self.pattern
 
         for line_num, line in enumerate(lines, start=1):
-            m = pattern.search(line)
-
-            if m:
+            if m := pattern.search(line):
                 # Some tokens have checksumming built in that allows us to
                 # separate real tokens from test data. If we know of one,
                 # check it now.
@@ -301,8 +299,7 @@ class SecretScannerTool(BaseTool):
 
                 for key, value in six.iteritems(m.groupdict()):
                     if value is not None:
-                        validate_func = getattr(self, '_is_%s_valid' % key,
-                                                None)
+                        validate_func = getattr(self, f'_is_{key}_valid', None)
 
                         if validate_func is not None:
                             is_valid = validate_func(value, m)
@@ -394,8 +391,9 @@ class SecretScannerTool(BaseTool):
         # Review Board 5.0 generated token checksums using an incorrect
         # base62-encoding, which resulted in capital and lowercase letters
         # being swapped. We check against checksum.swapcase() to catch those.
-        return (len(token) == 255 and
-                token.startswith('rbp') and
-                re.match(r'^_[0-9A-Za-z]+$', token[3:]) is not None and
-                (token_checksum == checksum or
-                 token_checksum == checksum.swapcase()))
+        return (
+            len(token) == 255
+            and token.startswith('rbp')
+            and re.match(r'^_[0-9A-Za-z]+$', token[3:]) is not None
+            and token_checksum in [checksum, checksum.swapcase()]
+        )

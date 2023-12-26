@@ -9,7 +9,7 @@ from reviewboard.cmdline.rbext import RBExt
 
 def main(argv):
     print('Python %s.%s.%s' % (sys.version_info[:3]))
-    print('Review Board %s' % reviewboard.get_version_string())
+    print(f'Review Board {reviewboard.get_version_string()}')
 
     # When we drop Review Board 3.x support, we can remove -s and -m and
     # switch to:

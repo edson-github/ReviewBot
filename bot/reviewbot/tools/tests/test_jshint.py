@@ -88,10 +88,11 @@ class JSHintToolTests(BaseToolTestCase):
             [
                 self.tool_exe_path,
                 '--extract=False',
-                '--reporter=%s' % JSHintTool.REPORTER_PATH,
+                f'--reporter={JSHintTool.REPORTER_PATH}',
                 os.path.join(tmpdirs[-1], 'test.js'),
             ],
-            ignore_errors=True)
+            ignore_errors=True,
+        )
 
     @integration_test()
     @simulation_test(output_payload=[
@@ -143,11 +144,12 @@ class JSHintToolTests(BaseToolTestCase):
             [
                 self.tool_exe_path,
                 '--extract=False',
-                '--reporter=%s' % JSHintTool.REPORTER_PATH,
-                '--config=%s' % config_path,
+                f'--reporter={JSHintTool.REPORTER_PATH}',
+                f'--config={config_path}',
                 os.path.join(tmpdirs[-1], 'test.js'),
             ],
-            ignore_errors=True)
+            ignore_errors=True,
+        )
 
     def setup_simulation_test(self, output_payload):
         """Set up the simulation test for JSHint.

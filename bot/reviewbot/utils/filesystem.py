@@ -49,9 +49,8 @@ class PathPlatform(Enum):
         """
         if self == self.POSIX:
             return posixpath
-        else:
-            assert self == self.WINDOWS
-            return ntpath
+        assert self == self.WINDOWS
+        return ntpath
 
 
 @contextmanager
@@ -197,14 +196,7 @@ def get_path_platform(path):
 
     nt_parts = path.split(ntpath.sep)
 
-    if len(nt_parts) > 1:
-        # This is probably a Windows path, then. It could be a POSIX path
-        # with backslashes in the filenames, which means we might get this
-        # wrong, but that's probably far less common.
-        return PathPlatform.WINDOWS
-
-    # It's a bare path with no directories. Treat it as POSIX.
-    return PathPlatform.POSIX
+    return PathPlatform.WINDOWS if len(nt_parts) > 1 else PathPlatform.POSIX
 
 
 def normalize_platform_path(path, relative_to=None,

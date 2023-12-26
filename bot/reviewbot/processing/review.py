@@ -254,11 +254,7 @@ class File(object):
             The list of lines, up to the maximum requested. This will be
             empty if the lines could not be found.
         """
-        if original:
-            code_index = 2
-        else:
-            code_index = 5
-
+        code_index = 2 if original else 5
         result = list(islice(
             (
                 # result[1] is the row information.
@@ -391,10 +387,7 @@ class File(object):
 
             if num_lines != 1:
                 if num_lines > self.COMMENT_MAX_LINES:
-                    extra.append((
-                        'Lines',
-                        '%s-%s' % (first_line, first_line + num_lines - 1),
-                    ))
+                    extra.append(('Lines', f'{first_line}-{first_line + num_lines - 1}'))
                     num_lines = self.COMMENT_MAX_LINES
 
                 last_line = first_line + num_lines - 1
@@ -417,10 +410,10 @@ class File(object):
                 extra += text_extra
 
             if extra:
-                text = '%s\n\n%s' % (text, '\n'.join(
-                    '%s: %s' % (key, value)
-                    for key, value in extra
-                ))
+                text = '%s\n\n%s' % (
+                    text,
+                    '\n'.join(f'{key}: {value}' for key, value in extra),
+                )
 
             data = {
                 'filediff_id': self.id,
@@ -484,13 +477,15 @@ class File(object):
             bool:
             True if the region corresponds to modified code.
         """
-        for chunk, row, row_line_num in self._iter_lines(first_line=line_num,
-                                                         original=original):
-            if (chunk['change'] != 'equal' and
-                line_num <= row_line_num < line_num + num_lines):
-                return True
-
-        return False
+        return any(
+            (
+                chunk['change'] != 'equal'
+                and line_num <= row_line_num < line_num + num_lines
+            )
+            for chunk, row, row_line_num in self._iter_lines(
+                first_line=line_num, original=original
+            )
+        )
 
     def _iter_lines(self, first_line=None, original=False):
         """Iterate through lines in the diff data.
@@ -515,18 +510,14 @@ class File(object):
         """
         # The index in a diff line of a chunk that the relevant (original vs.
         # patched) line number is stored at.
-        if original:
-            line_num_index = 1
-        else:
-            line_num_index = 4
-
+        line_num_index = 1 if original else 4
         chunks = self.diff_data.chunks
 
         if first_line is not None:
             # First, we need to find the chunk with the line number. For
             # this, we'll do a simple binary search of the chunks.
             first_chunk, first_chunk_i, first_row, first_row_i = \
-                self._find_line_num_info(chunks=chunks,
+                    self._find_line_num_info(chunks=chunks,
                                          expected_line_num=first_line,
                                          line_num_index=line_num_index)
 
@@ -548,9 +539,7 @@ class File(object):
 
         for chunk in chunks:
             for row in chunk['lines']:
-                row_line_num = row[line_num_index]
-
-                if row_line_num:
+                if row_line_num := row[line_num_index]:
                     yield chunk, row, row_line_num
 
     def _find_line_num_info(self, chunks, expected_line_num, line_num_index):
@@ -616,7 +605,7 @@ class File(object):
                 # This chunk's lines precede the line we're looking for.
                 # Narrow the search space to everything after this chunk.
                 low = mid + 1
-            elif chunk_linenum1 > expected_line_num:
+            else:
                 # This chunk's lines follow the line we're looking for.
                 # Narrow the search space to everything before this chunk.
                 high = mid - 1
@@ -673,17 +662,16 @@ class Review(object):
                 review_request_id=self.review_request_id,
                 diff_revision=self.diff_revision)
 
-            for filediff in filediffs:
-                # Filter out binary files and symlinks.
-                if (getattr(filediff, 'binary', False) or
-                    filediff.status not in self._VALID_FILEDIFF_STATUS_TYPES or
-                    ('is_symlink' in filediff.extra_data and
-                     filediff.extra_data['is_symlink'])):
-                    continue
-
-                files.append(File(review=self,
-                                  api_filediff=filediff))
-
+            files.extend(
+                File(review=self, api_filediff=filediff)
+                for filediff in filediffs
+                if not getattr(filediff, 'binary', False)
+                and filediff.status in self._VALID_FILEDIFF_STATUS_TYPES
+                and (
+                    'is_symlink' not in filediff.extra_data
+                    or not filediff.extra_data['is_symlink']
+                )
+            )
         self.files = files
 
     def general_comment(self, text, issue=None, rich_text=False):
@@ -771,9 +759,7 @@ class Review(object):
             The filename of a new temporary file containing the patch contents.
             If the patch is empty, return None.
         """
-        patch_contents = self.patch_contents
-
-        if patch_contents:
+        if patch_contents := self.patch_contents:
             return make_tempfile(patch_contents, '.diff')
         else:
             return None

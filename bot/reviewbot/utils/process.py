@@ -127,10 +127,7 @@ def execute(command,
     if rc and none_on_ignored_error:
         data = None
 
-    if return_errors:
-        return data, errors
-    else:
-        return data
+    return (data, errors) if return_errors else data
 
 
 def is_exe_in_path(name, cache={}):
