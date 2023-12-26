@@ -397,7 +397,7 @@ class FBInferToolTests(BaseToolTestCase):
 
         for exe_dep in exe_deps:
             if not is_exe_in_path(exe_dep, cache=exe_paths):
-                raise SkipTest('%s was not found in the path' % exe_dep)
+                raise SkipTest(f'{exe_dep} was not found in the path')
 
     def setup_simulation_test(self, compile_error=False, file_error=False,
                               full_report=None, output=None):
@@ -430,9 +430,8 @@ class FBInferToolTests(BaseToolTestCase):
         @self.spy_for(execute)
         def _execute(command, *args, **kwargs):
             if compile_error and command[1] == 'compile':
-                raise Exception('Failed to execute command: %s' % command)
+                raise Exception(f'Failed to execute command: {command}')
             elif file_error and command[1] != 'compile':
-                raise Exception('FBInfer was unable to build `%s`.'
-                                % command[-1])
+                raise Exception(f'FBInfer was unable to build `{command[-1]}`.')
 
             return output

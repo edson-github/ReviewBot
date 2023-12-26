@@ -42,11 +42,13 @@ def get_api_root(url, username=None, api_token=None, session=None):
         rbtools.api.errors.APIError:
             There was an error fetching the root resource.
     """
-    client = RBClient(url,
-                      agent='ReviewBot/%s' % get_version_string(),
-                      cookie_file=config['cookie_path'],
-                      username=username,
-                      api_token=api_token,
-                      session=session)
+    client = RBClient(
+        url,
+        agent=f'ReviewBot/{get_version_string()}',
+        cookie_file=config['cookie_path'],
+        username=username,
+        api_token=api_token,
+        session=session,
+    )
 
     return client.get_root()

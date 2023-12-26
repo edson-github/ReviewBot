@@ -1010,8 +1010,8 @@ class FileTests(kgb.SpyAgency, TestCase):
             self.assertEqual(
                 review_file._translate_line_num(line_num, original=False),
                 expected_vline_num,
-                'Line number %s did not map to virtual line number %s'
-                % (line_num, expected_vline_num))
+                f'Line number {line_num} did not map to virtual line number {expected_vline_num}',
+            )
 
     def test_translate_line_num_with_original_true(self):
         """Testing File._translate_line_num with original=True"""
@@ -1053,8 +1053,8 @@ class FileTests(kgb.SpyAgency, TestCase):
             self.assertEqual(
                 review_file._translate_line_num(line_num, original=True),
                 expected_vline_num,
-                'Line number %s did not map to virtual line number %s'
-                % (line_num, expected_vline_num))
+                f'Line number {line_num} did not map to virtual line number {expected_vline_num}',
+            )
 
     def test_is_modified_with_original_false(self):
         """Testing File._is_modified with original=False"""
@@ -1120,8 +1120,8 @@ class FileTests(kgb.SpyAgency, TestCase):
             self.assertIs(
                 review_file._is_modified(line_num, num_lines, original=False),
                 expected_is_modified,
-                'Modified state for line range %s-%s was expected to be %s'
-                % (line_num, line_num + num_lines, expected_is_modified))
+                f'Modified state for line range {line_num}-{line_num + num_lines} was expected to be {expected_is_modified}',
+            )
 
     def test_is_modified_with_original_true(self):
         """Testing File._is_modified with original=True"""
@@ -1178,5 +1178,5 @@ class FileTests(kgb.SpyAgency, TestCase):
             self.assertIs(
                 review_file._is_modified(line_num, num_lines, original=True),
                 expected_is_modified,
-                'Modified state for line range %s-%s was expected to be %s'
-                % (line_num, line_num + num_lines, expected_is_modified))
+                f'Modified state for line range {line_num}-{line_num + num_lines} was expected to be {expected_is_modified}',
+            )

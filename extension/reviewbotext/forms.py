@@ -153,7 +153,7 @@ class ReviewBotConfigForm(IntegrationConfigForm):
         try:
             return Tool.objects.get(pk=value)
         except Tool.DoesNotExist:
-            raise ValidationError('Tool with pk %s does not exist' % value)
+            raise ValidationError(f'Tool with pk {value} does not exist')
 
     class Meta:
         fieldsets = (

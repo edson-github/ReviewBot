@@ -85,8 +85,7 @@ class ReviewBotIntegration(Integration):
         ]
 
         for config in matching_configs:
-            if (service_id is not None and
-                'reviewbot.%s' % config.id != service_id):
+            if service_id is not None and f'reviewbot.{config.id}' != service_id:
                 continue
 
             tool_id = config.settings.get('tool')
@@ -174,7 +173,7 @@ class ReviewBotIntegration(Integration):
             # Use the config ID rather than the tool name because it is unique
             # and unchanging. This allows us to find other status updates from
             # the same tool config.
-            service_id = 'reviewbot.%s' % config.id
+            service_id = f'reviewbot.{config.id}'
 
             if config.settings.get('drop_old_issues'):
                 self._drop_old_issues(user, service_id, review_request)
@@ -197,10 +196,10 @@ class ReviewBotIntegration(Integration):
                 status_update.save()
 
                 repository = review_request.repository
-                queue = '%s.%s' % (tool.entry_point, tool.version)
+                queue = f'{tool.entry_point}.{tool.version}'
 
                 if tool.working_directory_required:
-                    queue = '%s.%s' % (queue, repository.name)
+                    queue = f'{queue}.{repository.name}'
 
                 extension.celery.send_task(
                     'reviewbot.tasks.RunTool',
@@ -291,10 +290,10 @@ class ReviewBotIntegration(Integration):
         status_update.save(update_fields=('description', 'state', 'timestamp'))
 
         repository = review_request.repository
-        queue = '%s.%s' % (tool.entry_point, tool.version)
+        queue = f'{tool.entry_point}.{tool.version}'
 
         if tool.working_directory_required:
-            queue = '%s.%s' % (queue, repository.name)
+            queue = f'{queue}.{repository.name}'
 
         changedesc = status_update.change_description
 

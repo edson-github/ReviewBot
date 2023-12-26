@@ -91,8 +91,9 @@ def get_config_file_path():
         The configuration file path.
     """
     return os.environ.get(
-        str('REVIEWBOT_CONFIG_FILE'),
-        os.path.join(_appdirs.site_config_dir, 'config.py'))
+        'REVIEWBOT_CONFIG_FILE',
+        os.path.join(_appdirs.site_config_dir, 'config.py'),
+    )
 
 
 def load_config():
@@ -181,11 +182,7 @@ def load_config():
                        'defaults.',
                        config_file)
 
-    # If a Review Board servers JSON file was specified, load it into the
-    # configuration.
-    servers_path = new_config['reviewboard_servers_config_path']
-
-    if servers_path:
+    if servers_path := new_config['reviewboard_servers_config_path']:
         if os.path.exists(servers_path):
             new_config['reviewboard_servers'] += \
                 _load_json_config_items(servers_path)
@@ -196,11 +193,7 @@ def load_config():
                            'this.',
                            servers_path)
 
-    # If a repositories JSON file was specified, load it into the
-    # configuration.
-    repositories_config_path = new_config['repositories_config_path']
-
-    if repositories_config_path:
+    if repositories_config_path := new_config['repositories_config_path']:
         if os.path.exists(repositories_config_path):
             new_config['repositories'] += \
                 _load_json_config_items(repositories_config_path)

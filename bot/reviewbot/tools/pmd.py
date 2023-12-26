@@ -148,11 +148,7 @@ class PMDTool(JavaToolMixin, FilePatternsFromSettingMixin, BaseTool):
                       first_line=None)
             return
 
-        # Check for any processing errors found in the report. If we find
-        # any, we'll want to provide some information as a comment.
-        processing_errors = report.get('processingErrors')
-
-        if processing_errors:
+        if processing_errors := report.get('processingErrors'):
             norm_path = os.path.realpath(path)
 
             for error_info in processing_errors:

@@ -104,15 +104,11 @@ class JSHintTool(FilePatternsFromSettingMixin, BaseTool):
 
         cmd = [
             config['exe_paths']['jshint'],
-            '--extract=%s' % settings['extract_js_from_html'],
-            '--reporter=%s' % self.REPORTER_PATH,
+            f"--extract={settings['extract_js_from_html']}",
+            f'--reporter={self.REPORTER_PATH}',
         ]
 
-        # If any configuration was specified, create a temporary config file.
-        # This will be used for each file.
-        config_content = self.settings['config']
-
-        if config_content:
+        if config_content := self.settings['config']:
             cmd.append('--config=%s'
                        % make_tempfile(content=config_content.encode('utf-8')))
 
@@ -134,10 +130,7 @@ class JSHintTool(FilePatternsFromSettingMixin, BaseTool):
             **kwargs (dict, unused):
                 Additional keyword arguments.
         """
-        output = execute(base_command + [path],
-                         ignore_errors=True)
-
-        if output:
+        if output := execute(base_command + [path], ignore_errors=True):
             errors = json.loads(output)
 
             for error in errors:

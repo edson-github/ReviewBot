@@ -131,7 +131,7 @@ class FBInferTool(FullRepositoryToolMixin, BaseTool):
 
         if build_type == 'xcodebuild':
             xcode_configuration = \
-                settings.get('xcode_configuration', '').strip()
+                    settings.get('xcode_configuration', '').strip()
             xcode_sdk = settings.get('sdk', '').strip()
 
             if build_target:
@@ -142,9 +142,8 @@ class FBInferTool(FullRepositoryToolMixin, BaseTool):
 
             if xcode_sdk:
                 cmd += ['-sdk', xcode_sdk]
-        else:
-            if build_target:
-                cmd.append(build_target)
+        elif build_target:
+            cmd.append(build_target)
 
         return cmd
 
@@ -281,8 +280,8 @@ class FBInferTool(FullRepositoryToolMixin, BaseTool):
                 path, base_command, e)
 
             review.general_comment(
-                'FBInfer was unable to build `%s`.' % path,
-                rich_text=True)
+                f'FBInfer was unable to build `{path}`.', rich_text=True
+            )
 
             return
 

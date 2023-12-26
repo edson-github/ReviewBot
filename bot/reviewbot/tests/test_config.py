@@ -41,12 +41,12 @@ class ConfigTests(kgb.SpyAgency, TestCase):
                 '}]\n'
             )
 
-        os.environ[str('REVIEWBOT_CONFIG_FILE')] = str(config_file)
+        os.environ['REVIEWBOT_CONFIG_FILE'] = str(config_file)
 
         try:
             load_config()
         finally:
-            del os.environ[str('REVIEWBOT_CONFIG_FILE')]
+            del os.environ['REVIEWBOT_CONFIG_FILE']
 
         self.assertEqual(config['reviewboard_servers'], [
             {
@@ -252,7 +252,7 @@ class ConfigTests(kgb.SpyAgency, TestCase):
         new_cookie_dir = tempfile.mkdtemp()
 
         try:
-            self._load_custom_config('cookie_dir = "%s"' % new_cookie_dir)
+            self._load_custom_config(f'cookie_dir = "{new_cookie_dir}"')
         finally:
             os.rmdir(new_cookie_dir)
 

@@ -118,17 +118,13 @@ class ToolOptionsWidget(MultiWidget):
                 widget_value = None
 
             if id_:
-                final_attrs = dict(final_attrs, id='%s_%s' % (id_, i))
+                final_attrs = dict(final_attrs, id=f'{id_}_{i}')
 
-            widget_name = '%s_%s' % (name, i)
+            widget_name = f'{name}_{i}'
 
             field = self.fields[i]
 
-            if field['form_field'].required:
-                label_class = 'required'
-            else:
-                label_class = ''
-
+            label_class = 'required' if field['form_field'].required else ''
             if field['form_field'].help_text:
                 help_text = format_html('<p class="help">{0}</p>',
                                         field['form_field'].help_text)
@@ -178,8 +174,7 @@ class ToolOptionsWidget(MultiWidget):
 
             if field['tool_id'] == selected_tool:
                 key = field['name']
-                value = widget.value_from_datadict(
-                    data, files, '%s_%s' % (name, i))
+                value = widget.value_from_datadict(data, files, f'{name}_{i}')
 
                 result[key] = value
 
@@ -196,11 +191,7 @@ class ToolOptionsWidget(MultiWidget):
             list:
             A list of values for each sub-widget.
         """
-        if value:
-            values = json.loads(value)
-        else:
-            values = {}
-
+        values = json.loads(value) if value else {}
         return [
             values.get(field['name'], field['default'])
             for field in self.fields

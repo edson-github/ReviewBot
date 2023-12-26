@@ -48,7 +48,7 @@ class Tool(models.Model):
             unicode:
             The text representation for this model.
         """
-        return '%s - v%s' % (self.name, self.version)
+        return f'{self.name} - v{self.version}'
 
     class Meta:
         app_label = 'reviewbotext'

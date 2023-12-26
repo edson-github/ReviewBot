@@ -17,21 +17,22 @@ def get_version_string():
         unicode:
         The full version.
     """
-    version = '%s.%s' % (VERSION[0], VERSION[1])
+    version = f'{VERSION[0]}.{VERSION[1]}'
 
     if VERSION[2] or VERSION[3]:
-        version = '%s.%s' % (version, VERSION[2])
+        version = f'{version}.{VERSION[2]}'
 
     if VERSION[3]:
-        version = '%s.%s' % (version, VERSION[3])
+        version = f'{version}.{VERSION[3]}'
 
     tag = VERSION[4]
 
-    if tag != 'final':
-        if tag == 'rc':
-            version = '%s RC%s' % (version, VERSION[5])
-        else:
-            version = '%s %s %s' % (version, tag, VERSION[5])
+    if tag == 'final':
+        pass
+    elif tag == 'rc':
+        version = f'{version} RC{VERSION[5]}'
+    else:
+        version = f'{version} {tag} {VERSION[5]}'
 
     if not is_release():
         version += ' (dev)'
@@ -51,10 +52,10 @@ def get_package_version():
     version = '%d.%d' % (VERSION[0], VERSION[1])
 
     if VERSION[2] or VERSION[3]:
-        version = '%s.%s' % (version, VERSION[2])
+        version = f'{version}.{VERSION[2]}'
 
     if VERSION[3]:
-        version = '%s.%s' % (version, VERSION[3])
+        version = f'{version}.{VERSION[3]}'
 
     tag = VERSION[4]
 
@@ -64,7 +65,7 @@ def get_package_version():
         elif tag == 'beta':
             tag = 'b'
 
-        version = '%s%s%s' % (version, tag, VERSION[5])
+        version = f'{version}{tag}{VERSION[5]}'
 
     return version
 

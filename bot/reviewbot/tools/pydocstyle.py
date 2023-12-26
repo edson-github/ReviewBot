@@ -62,7 +62,7 @@ class PydocstyleTool(BaseTool):
         cmdline = [config['exe_paths']['pydocstyle']]
 
         if ignore:
-            cmdline.append('--ignore=%s' % ignore)
+            cmdline.append(f'--ignore={ignore}')
 
         return cmdline
 

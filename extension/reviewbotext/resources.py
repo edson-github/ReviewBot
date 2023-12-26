@@ -300,9 +300,9 @@ class ReviewBotReviewResource(WebAPIResource):
                     return INVALID_FORM_DATA, {
                         'fields': {
                             'diff_comments': [
-                                'Invalid filediff ID: %s' % filediff_id,
-                            ],
-                        },
+                                f'Invalid filediff ID: {filediff_id}'
+                            ]
+                        }
                     }
         except InvalidFormDataError as e:
             return INVALID_FORM_DATA, e.data
@@ -359,28 +359,24 @@ class ReviewBotReviewResource(WebAPIResource):
 
         for comment in comments:
             comment_keys = set(comment.keys())
-            missing_keys = expected_keys - comment_keys
-
-            if missing_keys:
+            if missing_keys := expected_keys - comment_keys:
                 missing_keys = ', '.join(missing_keys)
-                raise InvalidFormDataError({
-                    'fields': {
-                        comment_type: [
-                            'Element missing keys "%s".' % missing_keys,
-                        ],
-                    },
-                })
+                raise InvalidFormDataError(
+                    {
+                        'fields': {
+                            comment_type: [
+                                f'Element missing keys "{missing_keys}".'
+                            ]
+                        }
+                    }
+                )
 
             for key in comment_keys:
                 if key not in expected_keys:
                     logging.warning('%s field ignored.', key)
                     del comment[key]
 
-            if comment['issue_opened']:
-                comment['issue_status'] = BaseComment.OPEN
-            else:
-                comment['issue_status'] = None
-
+            comment['issue_status'] = BaseComment.OPEN if comment['issue_opened'] else None
         return comments
 
 

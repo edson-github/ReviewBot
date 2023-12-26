@@ -72,11 +72,11 @@ class Flake8Tool(BaseTool):
             config['exe_paths']['flake8'],
             '--exit-zero',
             '--format=codeclimate',
-            '--max-line-length=%s' % settings['max_line_length'],
+            f"--max-line-length={settings['max_line_length']}",
         ]
 
         if ignore:
-            cmdline.append('--ignore=%s' % ignore)
+            cmdline.append(f'--ignore={ignore}')
 
         return cmdline
 

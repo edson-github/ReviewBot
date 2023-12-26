@@ -36,7 +36,7 @@ class ToolTestCaseMetaclass(type):
         3.0
     """
 
-    def __new__(meta, name, bases, d):
+    def __new__(cls, name, bases, d):
         """Construct a new class.
 
         Args:
@@ -55,36 +55,33 @@ class ToolTestCaseMetaclass(type):
         """
         tool_class = d.get('tool_class')
 
-        assert tool_class, '%s must set base_tool_class' % name
+        assert tool_class, f'{name} must set base_tool_class'
 
         if tool_class.exe_dependencies:
-            assert d.get('tool_exe_config_key'), \
-               '%s must set tool_exe_config_key' % name
-            assert d.get('tool_exe_path'), '%s must set tool_exe_path' % name
+            assert d.get('tool_exe_config_key'), f'{name} must set tool_exe_config_key'
+            assert d.get('tool_exe_path'), f'{name} must set tool_exe_path'
 
         for func_name, func in six.iteritems(d.copy()):
             if callable(func):
                 added = False
 
                 if hasattr(func, 'integration_setup_kwargs'):
-                    new_name = meta.tag_func_name(func_name, 'integration')
-                    d[new_name] = meta.make_integration_test_func(func,
-                                                                  new_name)
+                    new_name = cls.tag_func_name(func_name, 'integration')
+                    d[new_name] = cls.make_integration_test_func(func, new_name)
                     added = True
 
                 if hasattr(func, 'simulation_setup_kwargs'):
-                    new_name = meta.tag_func_name(func_name, 'simulation')
-                    d[new_name] = meta.make_simulation_test_func(func,
-                                                                 new_name)
+                    new_name = cls.tag_func_name(func_name, 'simulation')
+                    d[new_name] = cls.make_simulation_test_func(func, new_name)
                     added = True
 
                 if added:
                     del d[func_name]
 
-        return super(ToolTestCaseMetaclass, meta).__new__(meta, name, bases, d)
+        return super(ToolTestCaseMetaclass, cls).__new__(cls, name, bases, d)
 
     @classmethod
-    def tag_func_name(meta, func_name, tag):
+    def tag_func_name(cls, func_name, tag):
         """Return a function name tagged with an identifier.
 
         This will convert a ``test_*`` function name into a
@@ -102,7 +99,7 @@ class ToolTestCaseMetaclass(type):
             The resulting function name.
         """
         assert func_name.startswith('test_')
-        return str('test_%s_%s' % (tag, func_name[5:]))
+        return str(f'test_{tag}_{func_name[5:]}')
 
     @classmethod
     def make_integration_test_func(meta, func, func_name):
@@ -131,12 +128,11 @@ class ToolTestCaseMetaclass(type):
                 os.environ['PATH'] = self._old_path
 
                 if not self.tool_class().check_dependencies():
-                    raise SkipTest('%s dependencies not available'
-                                   % self.tool_class.name)
+                    raise SkipTest(f'{self.tool_class.name} dependencies not available')
 
                 if self.tool_exe_config_key:
                     self.tool_exe_path = \
-                        config['exe_paths'][self.tool_exe_config_key]
+                            config['exe_paths'][self.tool_exe_config_key]
 
                 self.spy_on(execute)
                 self.setup_integration_test(**func.integration_setup_kwargs)
@@ -147,7 +143,7 @@ class ToolTestCaseMetaclass(type):
                 self.tool_exe_path = old_tool_exe_path
 
         _wrapper.__name__ = func_name
-        _wrapper.__doc__ = '%s [integration test]' % _wrapper.__doc__
+        _wrapper.__doc__ = f'{_wrapper.__doc__} [integration test]'
 
         return _wrapper
 
@@ -177,7 +173,7 @@ class ToolTestCaseMetaclass(type):
             return func(self, *args, **kwargs)
 
         _wrapper.__name__ = func_name
-        _wrapper.__doc__ = '%s [simulation test]' % _wrapper.__doc__
+        _wrapper.__doc__ = f'{_wrapper.__doc__} [simulation test]'
 
         return _wrapper
 
@@ -408,10 +404,7 @@ class BaseToolTestCase(kgb.SpyAgency, TestCase):
             tool.execute(review,
                          repository=repository)
 
-        if other_files:
-            return review, review_files
-
-        return review, review_file
+        return (review, review_files) if other_files else (review, review_file)
 
     def setup_integration_test(self, **kwargs):
         """Set up an integration test.

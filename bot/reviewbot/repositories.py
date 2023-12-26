@@ -138,8 +138,15 @@ class GitRepository(BaseRepository):
         else:
             logger.info('Fetching into existing repository %s',
                         self.repo_path)
-            execute(['git', '--git-dir=%s' % self.repo_path, 'fetch',
-                     'origin', '+refs/heads/*:refs/heads/*'])
+            execute(
+                [
+                    'git',
+                    f'--git-dir={self.repo_path}',
+                    'fetch',
+                    'origin',
+                    '+refs/heads/*:refs/heads/*',
+                ]
+            )
 
     def checkout(self, commit_id):
         """Check out the given commit.
@@ -153,12 +160,13 @@ class GitRepository(BaseRepository):
             The name of a directory with the given checkout.
         """
         workdir = make_tempdir()
-        branchname = 'br-%s-%s' % (commit_id, uuid4())
+        branchname = f'br-{commit_id}-{uuid4()}'
 
         logger.info('Creating temporary branch for clone in repo %s',
                     self.repo_path)
-        execute(['git', '--git-dir=%s' % self.repo_path, 'branch', branchname,
-                 commit_id])
+        execute(
+            ['git', f'--git-dir={self.repo_path}', 'branch', branchname, commit_id]
+        )
 
         try:
             logger.info('Creating working tree for commit ID %s in %s', commit_id,
@@ -168,8 +176,7 @@ class GitRepository(BaseRepository):
         finally:
             logger.info('Removing temporary branch for clone in repo %s',
                         self.repo_path)
-            execute(['git', '--git-dir=%s' % self.repo_path, 'branch', '-d',
-                     branchname])
+            execute(['git', f'--git-dir={self.repo_path}', 'branch', '-d', branchname])
 
         return workdir
 
@@ -240,15 +247,18 @@ def fetch_repositories(url, user=None, token=None):
                                       only_fields='path,mirror_path,name')
 
         for repo in repos.all_items:
-            clone_path = None
-
-            for path in (repo.path, repo.mirror_path):
-                if (os.path.exists(path) or path.startswith('http') or
-                    path.startswith('git')):
-                    clone_path = path
-                    break
-
-            if clone_path:
+            if clone_path := next(
+                (
+                    path
+                    for path in (repo.path, repo.mirror_path)
+                    if (
+                        os.path.exists(path)
+                        or path.startswith('http')
+                        or path.startswith('git')
+                    )
+                ),
+                None,
+            ):
                 repositories[repo.name] = repository_cls(
                     name=repo.name,
                     clone_path=clone_path)
@@ -293,18 +303,15 @@ def init_repositories():
                          server, e)
 
     for repository in config['repositories']:
-        missing_keys = ({'name', 'type', 'clone_path'} -
-                        set(six.iterkeys(repository)))
-
-        if missing_keys:
+        if missing_keys := (
+            {'name', 'type', 'clone_path'} - set(six.iterkeys(repository))
+        ):
             logger.error(
                 'The following repository configuration is '
                 'missing the %s key(s): %r',
-                ', '.join(
-                    '"%s"' % _key
-                    for _key in sorted(missing_keys)
-                ),
-                repository)
+                ', '.join(f'"{_key}"' for _key in sorted(missing_keys)),
+                repository,
+            )
             continue
 
         repo_name = repository['name']

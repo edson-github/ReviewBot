@@ -67,7 +67,7 @@ class CheckstyleTool(JavaToolMixin, BaseTool):
 
         return super(CheckstyleTool, self).build_base_command(**kwargs) + [
             '-f=xml',
-            '-c=%s' % config_xml,
+            f'-c={config_xml}',
         ]
 
     def handle_file(self, f, path, base_command, **kwargs):

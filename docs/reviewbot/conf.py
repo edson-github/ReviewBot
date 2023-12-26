@@ -386,14 +386,14 @@ napoleon_numpy_docstring = False
 rb_version = reviewbot.VERSION
 
 if rb_version[3] == 'final' or rb_version[5] > 0:
-    git_branch = 'release-%s.%s' % (rb_version[0], rb_version[1])
+    git_branch = f'release-{rb_version[0]}.{rb_version[1]}'
 
     if reviewbot.is_release():
         if rb_version[2]:
-            git_branch += '.%s' % rb_version[2]
+            git_branch += f'.{rb_version[2]}'
 
             if rb_version[3]:
-                git_branch += '.%s' % rb_version[3]
+                git_branch += f'.{rb_version[3]}'
 
         if version[4] != 'final':
             git_branch += rb_version[4]
@@ -426,7 +426,7 @@ def linkcode_resolve(domain, info):
 # Cross-referencing.
 intersphinx_mapping = {
     'celery': ('https://docs.celeryq.dev/en/3.1/', None),
-    'reviewboard': ('%s/docs/manual/latest/' % rbwebsite_url, None),
+    'reviewboard': (f'{rbwebsite_url}/docs/manual/latest/', None),
 }
 
 

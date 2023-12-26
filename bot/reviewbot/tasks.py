@@ -90,8 +90,7 @@ def RunTool(server_url='',
         route_parts = routing_key.partition('.')
         tool_name = route_parts[0]
 
-        log_detail = ('(server=%s, review_request_id=%s, diff_revision=%s)'
-                      % (server_url, review_request_id, diff_revision))
+        log_detail = f'(server={server_url}, review_request_id={review_request_id}, diff_revision={diff_revision})'
 
         logger.debug('Running tool "%s" %s', tool_name, log_detail)
 
@@ -270,7 +269,7 @@ def update_tools_list(panel, payload):
 
         return {
             'status': 'error',
-            'error': 'Could not reach Review Board server: %s' % e,
+            'error': f'Could not reach Review Board server: {e}',
         }
 
     try:
@@ -279,10 +278,7 @@ def update_tools_list(panel, payload):
     except Exception as e:
         logger.exception('Problem POSTing tools: %s', e)
 
-        return {
-            'status': 'error',
-            'error': 'Problem uploading tools: %s' % e,
-        }
+        return {'status': 'error', 'error': f'Problem uploading tools: {e}'}
 
     return {
         'status': 'ok',

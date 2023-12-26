@@ -103,14 +103,13 @@ class ShellCheckTool(BaseTool):
             config['exe_paths']['shellcheck'],
             '--color=never',
             '--format=json1',
-            '--severity=%s' % settings['severity'],
+            f"--severity={settings['severity']}",
         ]
 
         if exclude:
             # Normalize the error list, preventing errors if there are spaces
             # or redundant commas.
-            cmdline.append('--exclude=%s'
-                           % ','.join(split_comma_separated(exclude)))
+            cmdline.append(f"--exclude={','.join(split_comma_separated(exclude))}")
 
         return cmdline
 
@@ -212,13 +211,11 @@ class ShellCheckTool(BaseTool):
                     replacement_end_column = replacement['endColumn']
                     replacement_text = replacement['replacement']
                     replacement_line = \
-                        replacement_lines[replacement_norm_linenum]
+                            replacement_lines[replacement_norm_linenum]
 
-                    replacement_lines[replacement_norm_linenum] = (
-                        '%s%s%s'
-                        % (replacement_line[:replacement_start_column - 1],
-                           replacement_text,
-                           replacement_line[replacement_end_column - 1:]))
+                    replacement_lines[
+                        replacement_norm_linenum
+                    ] = f'{replacement_line[:replacement_start_column - 1]}{replacement_text}{replacement_line[replacement_end_column - 1:]}'
 
             if replacement_lines:
                 comment_text = (

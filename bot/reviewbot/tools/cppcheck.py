@@ -123,13 +123,10 @@ class CPPCheckTool(BaseTool):
             enabled_checks.append('style')
 
         if enabled_checks:
-            cmdline.append('--enable=%s' % ','.join(enabled_checks))
+            cmdline.append(f"--enable={','.join(enabled_checks)}")
 
-        # Force a specific C variant, if requested.
-        force_language = settings.get('force_language')
-
-        if force_language:
-            cmdline.append('--language=%s' % force_language)
+        if force_language := settings.get('force_language'):
+            cmdline.append(f'--language={force_language}')
 
         return cmdline
 

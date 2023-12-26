@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 """Builds a Docker image for the current version of Review Bot."""
 
+
 from __future__ import print_function, unicode_literals
 
 import argparse
@@ -63,17 +64,20 @@ if __name__ == '__main__':
     options = argparser.parse_args()
 
     package_version = get_package_version()
-    major_version = '%s' % VERSION[0]
+    major_version = f'{VERSION[0]}'
     major_minor_version = '%s.%s' % VERSION[:2]
     image_version = package_version
 
     # If this is a development release, check if a built package has been
     # placed in the packages/ directory.
     if not is_release():
-        package_version = '%s.dev0' % package_version
-        package_path = os.path.join(docker_dir, 'base', 'packages',
-                                    'reviewbot_worker-%s-py2.py3-none-any.whl'
-                                    % package_version)
+        package_version = f'{package_version}.dev0'
+        package_path = os.path.join(
+            docker_dir,
+            'base',
+            'packages',
+            f'reviewbot_worker-{package_version}-py2.py3-none-any.whl',
+        )
 
         if not os.path.exists(package_path):
             sys.stderr.write(
@@ -88,23 +92,25 @@ if __name__ == '__main__':
     base_image = IMAGE_FMT % 'base'
 
     build_args = [
-        '--platform', ','.join(ARCHS),
-        '--build-arg', 'REVIEWBOT_VERSION=%s' % package_version,
-        '--build-arg', 'REVIEWBOT_BASE_TAG=%s:%s' % (base_image,
-                                                     image_version),
+        '--platform',
+        ','.join(ARCHS),
+        '--build-arg',
+        f'REVIEWBOT_VERSION={package_version}',
+        '--build-arg',
+        f'REVIEWBOT_BASE_TAG={base_image}:{image_version}',
     ]
 
     all_tags = []
 
     for image in IMAGES:
         image_name = IMAGE_FMT % image
-        tags = ['%s:%s' % (image_name, image_version)]
+        tags = [f'{image_name}:{image_version}']
 
         if options.tag_major:
-            tags.append('%s:%s' % (image_name, major_version))
+            tags.append(f'{image_name}:{major_version}')
 
         if options.tag_major_minor:
-            tags.append('%s:%s' % (image_name, major_minor_version))
+            tags.append(f'{image_name}:{major_minor_version}')
 
         if options.tag_latest:
             tags.append(image_name)
@@ -120,7 +126,7 @@ if __name__ == '__main__':
         cmd.append('.')
 
         # Now build the image.
-        print('===== Building %s =====' % image_name)
+        print(f'===== Building {image_name} =====')
         p = subprocess.Popen(cmd,
                              stdout=sys.stdout,
                              stderr=sys.stderr,
